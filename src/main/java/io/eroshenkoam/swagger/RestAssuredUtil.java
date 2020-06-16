@@ -21,6 +21,7 @@ public final class RestAssuredUtil {
                 .addFilter(new SwaggerCoverageRestAssured(defaultWriter()))
                 .setBaseUri("https://petstore.swagger.io/v2")
                 .addHeader("Accept", "application/json")
+                .addHeader("Content-Type", "application/json")
                 .build();
     }
 
