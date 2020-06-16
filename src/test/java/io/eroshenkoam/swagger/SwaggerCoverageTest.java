@@ -15,7 +15,8 @@ public class SwaggerCoverageTest {
         .when()
             .get("/pet/{id}", 1)
         .then()
-            .statusCode(404);
+            .statusCode(200)
+            .body("id", equalTo(1));
         // @formatter:on
 
     }
