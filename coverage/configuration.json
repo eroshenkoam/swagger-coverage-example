@@ -1,0 +1,9 @@
+{
+  "writers": {
+    "html": {
+      "filename": "coverage.html",
+      "type": "html",
+      "locale": "ru"
+    }
+  }
+}

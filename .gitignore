@@ -1,0 +1,11 @@
+# Idea
+.idea
+*.iml
+
+# Gradle
+.gradle
+build
+
+# Coverage
+.coverage
+coverage.html

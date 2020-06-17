@@ -3,6 +3,16 @@ plugins {
     id 'de.undercouch.download' version '4.0.4'
 }
 
+ext {
+    coverageDownloadUrl = 'https://dl.bintray.com/viclovsky/maven/com/github/viclovsky/swagger/coverage/swagger-coverage-commandline/1.3.0/swagger-coverage-commandline-1.3.0.zip'
+    coverageCommandline = './.coverage/swagger-coverage-commandline-1.3.0/bin/swagger-coverage-commandline'
+    swaggerDownloadUrl = 'https://petstore.swagger.io/v2/swagger.json'
+
+    coverageConfiguration = './coverage/configuration.json'
+    coverageOutput = './swagger-coverage-output'
+    coverageSwagger = './build/swagger.json'
+}
+
 group 'org.example'
 version '1.0-SNAPSHOT'
 
@@ -11,7 +21,46 @@ sourceCompatibility = 1.8
 repositories {
     mavenLocal()
     mavenCentral()
+    maven { url 'https://dl.bintray.com/viclovsky/maven/' }
+}
+
+task downloadSwagger(type: Download) {
+    src "${swaggerDownloadUrl}"
+    dest "${coverageSwagger}"
+}
+
+task downloadCommandline(type: Download) {
+    src "${coverageDownloadUrl}"
+    dest file(".coverage/commandline.zip")
+    doFirst {
+        mkdir file(".coverage")
+    }
+}
+
+task unzipCommandline(type: Copy) {
+    dependsOn("downloadCommandline")
+    def zipFile = file(".coverage/commandline.zip")
+    from zipTree(zipFile)
+    into file(".coverage")
+}
+
+task coverageReport(type: Exec) {
+    dependsOn('downloadSwagger', 'unzipCommandline')
+
+    commandLine "${coverageCommandline}", "-s", "${coverageSwagger}", "-i", "${coverageOutput}", '-c', "${coverageConfiguration}"
+    workingDir '.'
+}
+
+test {
+    useJUnitPlatform()
 }
 
 dependencies {
+    compile("io.rest-assured:rest-assured:4.3.0")
+    compile("com.fasterxml.jackson.core:jackson-databind:2.11.0")
+    compile("com.github.viclovsky.swagger.coverage:swagger-coverage-rest-assured:1.3.0")
+
+    testCompile("org.junit.jupiter:junit-jupiter-api:5.3.0")
+    testCompile("org.junit.jupiter:junit-jupiter-engine:5.3.0")
+    testCompile("org.junit.jupiter:junit-jupiter-params:5.3.0")
 }
